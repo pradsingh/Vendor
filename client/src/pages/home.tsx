@@ -17,7 +17,7 @@ export default function Home() {
         <aside className="w-64 bg-card border-r">
           <div className="p-4">
             <img
-              src="/473401005_1684307442443812_4879780615142385148_n.jpg"
+              src="/assets/logo.jpg"
               alt="Xinacle Logo"
               className="h-8 mb-8"
             />
@@ -127,7 +127,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-8">
                 <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                   <img
-                    src="/images/local-marketplace.jpg"
+                    src="/assets/marketplace.jpg"
                     alt="Local Market"
                     className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
@@ -143,7 +143,7 @@ export default function Home() {
 
                 <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                   <img
-                    src="/images/special-deals.jpg"
+                    src="/assets/deals.jpg"
                     alt="Special Deals"
                     className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
