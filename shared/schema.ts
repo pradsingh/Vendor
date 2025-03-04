@@ -6,14 +6,14 @@ export const vendors = pgTable("vendors", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   whatsappNumber: text("whatsapp_number").notNull().unique(),
-  whatsappNegotiationNumber: text("whatsapp_negotiation_number"),
-  whatsappBookingNumber: text("whatsapp_booking_number"),
+  whatsappNegotiationNumber: text("whatsapp_negotiation_number").notNull().default(''),
+  whatsappBookingNumber: text("whatsapp_booking_number").notNull().default(''),
   businessType: text("business_type").notNull(),
-  googleListingUrl: text("google_listing_url"),
-  justDialUrl: text("just_dial_url"),
+  googleListingUrl: text("google_listing_url").notNull().default(''),
+  justDialUrl: text("just_dial_url").notNull().default(''),
   bargainLevel: text("bargain_level").notNull(),
-  maxDiscountThreshold: integer("max_discount_threshold"),
-  thresholdAmount: integer("threshold_amount"),
+  maxDiscountThreshold: integer("max_discount_threshold").notNull().default(0),
+  thresholdAmount: integer("threshold_amount").notNull().default(0),
   verified: boolean("verified").default(false),
 });
 
@@ -32,7 +32,7 @@ export const quotations = pgTable("quotations", {
   id: serial("id").primaryKey(),
   dealId: integer("deal_id").notNull(),
   negotiatedPrice: integer("negotiated_price").notNull(),
-  aiNotes: text("ai_notes"),
+  aiNotes: text("ai_notes").notNull().default(''),
   status: text("status").notNull(), // pending, accepted, rejected
 });
 

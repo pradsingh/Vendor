@@ -6,12 +6,12 @@ export interface IStorage {
   getVendorByWhatsapp(whatsapp: string): Promise<Vendor | undefined>;
   createVendor(vendor: InsertVendor): Promise<Vendor>;
   listVendors(): Promise<Vendor[]>;
-  
+
   // Deal operations
   createDeal(deal: InsertDeal): Promise<Deal>;
   getDeal(id: number): Promise<Deal | undefined>;
   listDeals(vendorId?: number): Promise<Deal[]>;
-  
+
   // Quotation operations
   createQuotation(quotation: InsertQuotation): Promise<Quotation>;
   getQuotation(id: number): Promise<Quotation | undefined>;
@@ -43,7 +43,17 @@ export class MemStorage implements IStorage {
 
   async createVendor(insertVendor: InsertVendor): Promise<Vendor> {
     const id = this.currentIds.vendor++;
-    const vendor: Vendor = { ...insertVendor, id, verified: false };
+    const vendor: Vendor = {
+      ...insertVendor,
+      id,
+      verified: false,
+      whatsappNegotiationNumber: insertVendor.whatsappNegotiationNumber || '',
+      whatsappBookingNumber: insertVendor.whatsappBookingNumber || '',
+      googleListingUrl: insertVendor.googleListingUrl || '',
+      justDialUrl: insertVendor.justDialUrl || '',
+      maxDiscountThreshold: insertVendor.maxDiscountThreshold || 0,
+      thresholdAmount: insertVendor.thresholdAmount || 0,
+    };
     this.vendors.set(id, vendor);
     return vendor;
   }
@@ -73,7 +83,11 @@ export class MemStorage implements IStorage {
 
   async createQuotation(insertQuotation: InsertQuotation): Promise<Quotation> {
     const id = this.currentIds.quotation++;
-    const quotation: Quotation = { ...insertQuotation, id };
+    const quotation: Quotation = {
+      ...insertQuotation,
+      id,
+      aiNotes: insertQuotation.aiNotes || '',
+    };
     this.quotations.set(id, quotation);
     return quotation;
   }
