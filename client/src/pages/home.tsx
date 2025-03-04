@@ -17,7 +17,7 @@ export default function Home() {
         <aside className="w-64 bg-card border-r">
           <div className="p-4">
             <img
-              src="/attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
+              src="attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
               alt="Xinacle Logo"
               className="h-8 mb-8"
             />
@@ -85,7 +85,7 @@ export default function Home() {
             </div>
 
             {/* Features */}
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
               <Card className="group hover:shadow-lg transition-all duration-300">
                 <CardContent className="pt-6">
                   <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit">
@@ -122,6 +122,41 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Local Marketplace Section */}
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
+                  <img
+                    src="https://images.unsplash.com/photo-1599032909756-5deb82fdd26b?q=80&w=2940&auto=format&fit=crop"
+                    alt="Local Market"
+                    className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end">
+                    <div className="p-6 text-white">
+                      <h3 className="text-xl font-bold mb-2">Explore Local Marketplace</h3>
+                      <p className="text-sm text-white/80">
+                        Discover trusted service providers and vendors in your locality
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
+                  <img
+                    src="https://images.unsplash.com/photo-1601576100235-28f4c3ae2b6d?q=80&w=2940&auto=format&fit=crop"
+                    alt="Special Deals"
+                    className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end">
+                    <div className="p-6 text-white">
+                      <h3 className="text-xl font-bold mb-2">Crazy Deals Near You</h3>
+                      <p className="text-sm text-white/80">
+                        Find amazing discounts and exclusive offers from local businesses
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
           </div>
         </main>
       </div>

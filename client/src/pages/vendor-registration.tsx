@@ -73,7 +73,7 @@ export default function VendorRegistration() {
       <div className="container mx-auto px-4">
         <div className="flex justify-center mb-8">
           <img
-            src="/attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
+            src="attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
             alt="Xinacle Logo"
             className="h-12"
           />

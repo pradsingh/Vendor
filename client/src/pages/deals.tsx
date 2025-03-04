@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { type Deal, type Vendor } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QuotationDialog from "@/components/quotation-dialog";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 
 export default function Deals() {
   const [searchTerm, setSearchTerm] = useState("");
