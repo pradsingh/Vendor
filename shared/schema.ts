@@ -6,7 +6,14 @@ export const vendors = pgTable("vendors", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   whatsappNumber: text("whatsapp_number").notNull().unique(),
+  whatsappNegotiationNumber: text("whatsapp_negotiation_number"),
+  whatsappBookingNumber: text("whatsapp_booking_number"),
   businessType: text("business_type").notNull(),
+  googleListingUrl: text("google_listing_url"),
+  justDialUrl: text("just_dial_url"),
+  bargainLevel: text("bargain_level").notNull(),
+  maxDiscountThreshold: integer("max_discount_threshold"),
+  thresholdAmount: integer("threshold_amount"),
   verified: boolean("verified").default(false),
 });
 
@@ -32,9 +39,23 @@ export const quotations = pgTable("quotations", {
 export const insertVendorSchema = createInsertSchema(vendors).pick({
   name: true,
   whatsappNumber: true,
+  whatsappNegotiationNumber: true,
+  whatsappBookingNumber: true,
   businessType: true,
+  googleListingUrl: true,
+  justDialUrl: true,
+  bargainLevel: true,
+  maxDiscountThreshold: true,
+  thresholdAmount: true,
 }).extend({
-  whatsappNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number")
+  whatsappNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number"),
+  whatsappNegotiationNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number").optional(),
+  whatsappBookingNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number").optional(),
+  bargainLevel: z.enum(["NO_BARGAIN", "LOW_BARGAIN", "MEDIUM_BARGAIN"]),
+  googleListingUrl: z.string().url("Invalid Google listing URL").optional(),
+  justDialUrl: z.string().url("Invalid JustDial URL").optional(),
+  maxDiscountThreshold: z.number().min(0).max(100).optional(),
+  thresholdAmount: z.number().min(0).optional(),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({
