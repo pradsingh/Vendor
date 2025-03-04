@@ -14,6 +14,7 @@ export const vendors = pgTable("vendors", {
   bargainLevel: text("bargain_level").notNull(),
   maxDiscountThreshold: integer("max_discount_threshold").notNull().default(0),
   thresholdAmount: integer("threshold_amount").notNull().default(0),
+  negotiationDescription: text("negotiation_description").notNull().default(''),
   verified: boolean("verified").default(false),
 });
 
@@ -47,6 +48,7 @@ export const insertVendorSchema = createInsertSchema(vendors).pick({
   bargainLevel: true,
   maxDiscountThreshold: true,
   thresholdAmount: true,
+  negotiationDescription: true,
 }).extend({
   whatsappNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number"),
   whatsappNegotiationNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, "Invalid WhatsApp number").optional(),
@@ -56,6 +58,7 @@ export const insertVendorSchema = createInsertSchema(vendors).pick({
   justDialUrl: z.string().url("Invalid JustDial URL").optional(),
   maxDiscountThreshold: z.number().min(0).max(100).optional(),
   thresholdAmount: z.number().min(0).optional(),
+  negotiationDescription: z.string().optional(),
 });
 
 export const insertDealSchema = createInsertSchema(deals).pick({

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function VendorRegistration() {
   const { toast } = useToast();
@@ -42,6 +43,7 @@ export default function VendorRegistration() {
       bargainLevel: "NO_BARGAIN",
       maxDiscountThreshold: 0,
       thresholdAmount: 0,
+      negotiationDescription: "",
     },
   });
 
@@ -69,6 +71,13 @@ export default function VendorRegistration() {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
+        <div className="flex justify-center mb-8">
+          <img
+            src="/473401005_1684307442443812_4879780615142385148_n.jpg"
+            alt="Xinacle Logo"
+            className="h-12"
+          />
+        </div>
         <h1 className="text-3xl font-bold text-center mb-8">Vendor Registration</h1>
 
         <Card className="max-w-2xl mx-auto">
@@ -204,6 +213,27 @@ export default function VendorRegistration() {
 
                 <div className="space-y-4 p-4 bg-secondary/10 rounded-lg">
                   <h3 className="font-semibold">Negotiation Settings</h3>
+
+                  <FormField
+                    control={form.control}
+                    name="negotiationDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Negotiation Approach</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your typical negotiation process and bargaining techniques..."
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Explain how you typically negotiate with customers and what factors influence your bargaining decisions
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
