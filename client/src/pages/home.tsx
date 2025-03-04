@@ -1,10 +1,15 @@
 import { Link } from "wouter";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, TrendingUp, Store } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import SearchSuggestions from "@/components/search-suggestions";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="flex h-screen">
@@ -60,7 +65,15 @@ export default function Home() {
                   <Input
                     className="h-20 pl-16 pr-6 text-xl rounded-2xl shadow-lg bg-card/50 backdrop-blur-sm border-2 border-primary/10 focus:border-primary/20 transition-all"
                     placeholder="What are you looking for?"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => {
+                      // Delay hiding suggestions to allow clicking on them
+                      setTimeout(() => setShowSuggestions(false), 200);
+                    }}
                   />
+                  <SearchSuggestions query={searchQuery} isOpen={showSuggestions} />
                 </div>
               </div>
               <div className="mt-6 text-sm text-center text-muted-foreground space-y-2">
