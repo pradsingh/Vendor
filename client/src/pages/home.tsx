@@ -17,7 +17,7 @@ export default function Home() {
         <aside className="w-64 bg-card border-r">
           <div className="p-4">
             <img
-              src="attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
+              src="/473401005_1684307442443812_4879780615142385148_n.jpg"
               alt="Xinacle Logo"
               className="h-8 mb-8"
             />
