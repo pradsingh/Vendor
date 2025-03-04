@@ -127,7 +127,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-8">
                 <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                   <img
-                    src="https://images.unsplash.com/photo-1599032909756-5deb82fdd26b?q=80&w=2940&auto=format&fit=crop"
+                    src="/images/local-marketplace.jpg"
                     alt="Local Market"
                     className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
@@ -143,7 +143,7 @@ export default function Home() {
 
                 <div className="relative rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition-all duration-300">
                   <img
-                    src="https://images.unsplash.com/photo-1601576100235-28f4c3ae2b6d?q=80&w=2940&auto=format&fit=crop"
+                    src="/images/special-deals.jpg"
                     alt="Special Deals"
                     className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
                   />
