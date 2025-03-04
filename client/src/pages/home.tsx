@@ -1,9 +1,8 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Bot, TrendingUp, Store } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Store, ShoppingBag, TrendingUp } from "lucide-react";
 
 export default function Home() {
   return (
@@ -13,23 +12,26 @@ export default function Home() {
         <aside className="w-64 bg-card border-r">
           <div className="p-4">
             <img
-              src="/473401005_1684307442443812_4879780615142385148_n.jpg"
+              src="/attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
               alt="Xinacle Logo"
               className="h-8 mb-8"
             />
             <nav className="space-y-2">
               <Link href="/register">
                 <Button variant="ghost" className="w-full justify-start">
+                  <Store className="mr-2 h-4 w-4" />
                   Vendor Registration
                 </Button>
               </Link>
               <Link href="/deals">
                 <Button variant="ghost" className="w-full justify-start">
+                  <TrendingUp className="mr-2 h-4 w-4" />
                   Browse Deals
                 </Button>
               </Link>
               <Link href="/dashboard">
                 <Button variant="ghost" className="w-full justify-start">
+                  <Store className="mr-2 h-4 w-4" />
                   Vendor Dashboard
                 </Button>
               </Link>
@@ -38,83 +40,75 @@ export default function Home() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-gradient-to-b from-background to-secondary/10">
           <div className="max-w-4xl mx-auto px-4 py-12">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold mb-4">AI-Powered Price Negotiation</h1>
-              <p className="text-xl text-muted-foreground">
-                Let our AI negotiate the best deals for you
+            <div className="text-center mb-16">
+              <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                AI-Powered Price Negotiation
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Let our advanced AI negotiate the best deals for you, saving both time and money
               </p>
             </div>
 
             {/* Central Search Area */}
-            <div className="max-w-2xl mx-auto mb-16">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  className="h-16 pl-12 pr-4 text-lg rounded-2xl shadow-lg"
-                  placeholder="What are you looking for?"
-                />
+            <div className="max-w-3xl mx-auto mb-16">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-75"></div>
+                <div className="relative">
+                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground" />
+                  <Input
+                    className="h-20 pl-16 pr-6 text-xl rounded-2xl shadow-lg bg-card/50 backdrop-blur-sm border-2 border-primary/10 focus:border-primary/20 transition-all"
+                    placeholder="What are you looking for?"
+                  />
+                </div>
               </div>
-              <p className="mt-3 text-sm text-center text-muted-foreground">
-                Examples: "Find electronics deals", "Compare prices for laptops", "Negotiate best price for smartphones"
-              </p>
+              <div className="mt-6 text-sm text-center text-muted-foreground space-y-2">
+                <p className="font-medium">Popular searches:</p>
+                <p>"Looking for trusted plumbers in my area"</p>
+                <p>"Compare outstation taxi prices for Mumbai to Pune"</p>
+                <p>"Best restaurant deals for group dining"</p>
+              </div>
             </div>
 
             {/* Features */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-lg bg-card">
-                <h3 className="text-lg font-semibold mb-2">AI Negotiation</h3>
-                <p className="text-muted-foreground">
-                  Our AI analyzes market data to negotiate the best possible price for you
-                </p>
-              </div>
-              <div className="p-6 rounded-lg bg-card">
-                <h3 className="text-lg font-semibold mb-2">Smart Bargaining</h3>
-                <p className="text-muted-foreground">
-                  Automated bargaining strategies based on vendor preferences
-                </p>
-              </div>
-              <div className="p-6 rounded-lg bg-card">
-                <h3 className="text-lg font-semibold mb-2">Real-time Deals</h3>
-                <p className="text-muted-foreground">
-                  Connect with local vendors and get instant price quotes
-                </p>
-              </div>
-            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              <Card className="group hover:shadow-lg transition-all duration-300">
+                <CardContent className="pt-6">
+                  <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit">
+                    <Bot className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Smart AI Negotiation</h3>
+                  <p className="text-muted-foreground">
+                    Our AI analyzes market trends and vendor data to negotiate the best possible deals
+                  </p>
+                </CardContent>
+              </Card>
 
-            {/* Featured Vendors - from original code */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 text-center">Featured Vendors</h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="relative rounded-lg overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1520333789090-1afc82db536a"
-                    alt="Business owner"
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
-                    <h3 className="text-white font-semibold">Local Businesses</h3>
-                    <p className="text-white/80 text-sm">
-                      Connect with trusted local vendors
-                    </p>
+              <Card className="group hover:shadow-lg transition-all duration-300">
+                <CardContent className="pt-6">
+                  <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit">
+                    <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
-                </div>
-                <div className="relative rounded-lg overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1495522097160-b7d527cc67f8"
-                    alt="Marketplace"
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
-                    <h3 className="text-white font-semibold">Marketplace</h3>
-                    <p className="text-white/80 text-sm">
-                      Find the best deals in your area
-                    </p>
+                  <h3 className="text-lg font-semibold mb-2">Real-time Bargaining</h3>
+                  <p className="text-muted-foreground">
+                    Get instant price quotes and automated bargaining based on vendor preferences
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="group hover:shadow-lg transition-all duration-300">
+                <CardContent className="pt-6">
+                  <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit">
+                    <Store className="h-6 w-6 text-primary" />
                   </div>
-                </div>
-              </div>
-            </section>
+                  <h3 className="text-lg font-semibold mb-2">Verified Vendors</h3>
+                  <p className="text-muted-foreground">
+                    Connect with trusted local vendors offering competitive prices
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </main>
       </div>
