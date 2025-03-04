@@ -49,10 +49,10 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-4 py-12">
             <div className="text-center mb-16">
               <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
-                AI-Powered Price Negotiation
+                Xinacle AI search
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Let our advanced AI negotiate the best deals for you, saving both time and money
+                Let our advanced AI negotiate the best deals for you, saving your precious time and money
               </p>
             </div>
 
