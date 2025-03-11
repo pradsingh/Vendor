@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,23 +17,25 @@ interface SearchResult {
   availability?: string;
   rating?: number;
   reviews?: number;
-  vendor: {
+  vendor?: {
     id: string;
     name: string;
     location: string;
   };
+  type?: string;
 }
 
 interface SearchResultsProps {
   results: SearchResult[];
+  isLoading: boolean;
 }
 
-export default function SearchResults({ results }: SearchResultsProps) {
+export default function SearchResults({ results, isLoading }: SearchResultsProps) {
   const [selectedResults, setSelectedResults] = useState<SearchResult[]>([]);
   const [showNegotiationOptions, setShowNegotiationOptions] = useState(false);
   const [negotiating, setNegotiating] = useState(false);
-  const [negotiationResults, setNegotiationResults] = useState<{[key: string]: NegotiationResult | null}>({});
   const [negotiationProgress, setNegotiationProgress] = useState<{[key: string]: string}>({});
+  const [negotiationResults, setNegotiationResults] = useState<{[key: string]: NegotiationResult}>({});
   const [showNegotiationPanel, setShowNegotiationPanel] = useState(false);
   const [allNegotiationsComplete, setAllNegotiationsComplete] = useState(false);
 
@@ -41,17 +44,27 @@ export default function SearchResults({ results }: SearchResultsProps) {
   const sortedResults = [...uniqueResults].sort((a, b) => {
     const aSelected = selectedResults.some(r => r.id === a.id);
     const bSelected = selectedResults.some(r => r.id === b.id);
-
+    
     if (aSelected && !bSelected) return -1;
     if (!aSelected && bSelected) return 1;
     return 0;
   });
 
-  const handleNegotiationSubmit = async (options: NegotiationOptionsType) => {
-    if (selectedResults.length === 0) return;
+  useEffect(() => {
+    // Clear selection when results change
+    setSelectedResults([]);
+    resetNegotiation();
+  }, [results]);
 
-    setNegotiating(true);
+  const handleStartNegotiation = () => {
+    if (selectedResults.length > 0) {
+      setShowNegotiationOptions(true);
+    }
+  };
+
+  const handleNegotiationSubmit = async (options: NegotiationOptionsType) => {
     setShowNegotiationOptions(false);
+    setNegotiating(true);
     setShowNegotiationPanel(true);
 
     try {
@@ -89,6 +102,21 @@ export default function SearchResults({ results }: SearchResultsProps) {
 
         await new Promise(resolve => setTimeout(resolve, 2500));
 
+        // Human-like negotiation responses
+        const humanResponses = [
+          "We've reached an agreement on better terms!",
+          "The vendor has accepted our proposal with some modifications.",
+          "Successfully negotiated a better deal for you.",
+          "After some back and forth, we've secured favorable terms.",
+          "Good news! The vendor has agreed to our conditions."
+        ];
+        
+        // Random human-like response
+        const randomResponse = humanResponses[Math.floor(Math.random() * humanResponses.length)];
+        
+        // Generate vendor name or use placeholder
+        const vendorName = result.vendor?.name || `${result.title.split(' ')[0]} provider`;
+        
         // Mock negotiation result
         const mockResult: NegotiationResult = {
           success: true,
@@ -100,7 +128,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
               "Extended warranty"
             ] : undefined,
           },
-          message: `Successfully negotiated with ${result.vendor ? result.vendor.name : 'the vendor'}!`,
+          message: `${randomResponse} ${options.negotiateDiscount ? "We've secured a special discount." : ""} ${options.negotiateExtraService ? "Additional services included at no extra cost." : ""}`,
         };
 
         // Final progress update
@@ -154,6 +182,18 @@ export default function SearchResults({ results }: SearchResultsProps) {
     setAllNegotiationsComplete(false);
   };
 
+  const getVendorDisplayName = (result: SearchResult) => {
+    if (result.vendor && result.vendor.name) {
+      return result.vendor.name;
+    }
+    // Extract a vendor name from the title if possible
+    const titleParts = result.title.split('-');
+    if (titleParts.length > 1) {
+      return titleParts[0].trim();
+    }
+    return result.title.split(' ')[0] + " Provider";
+  };
+
   return (
     <div className="space-y-6">
       {/* Global negotiation section above all results */}
@@ -170,66 +210,56 @@ export default function SearchResults({ results }: SearchResultsProps) {
                   Select services below and use AI to negotiate for better deals
                 </p>
               </div>
-
-              {selectedResults.length > 0 && !showNegotiationOptions && !negotiating && (
+              <div>
                 <Button 
-                  onClick={() => setShowNegotiationOptions(true)}
-                  disabled={negotiating}
+                  onClick={handleStartNegotiation}
+                  variant="default" 
+                  disabled={selectedResults.length === 0 || negotiating}
+                  className="w-full md:w-auto"
                 >
-                  Go for Negotiation ({selectedResults.length})
-                  <MessageSquare className="ml-2 h-4 w-4" />
+                  {negotiating ? (
+                    <>
+                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                      Negotiating...
+                    </>
+                  ) : (
+                    <>
+                      Negotiate ({selectedResults.length})
+                      <MessageSquare className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
-              )}
+              </div>
             </div>
-
-            {negotiating && !showNegotiationPanel && (
-              <div className="mt-4 flex items-center justify-center p-4 bg-secondary/20 rounded-lg">
-                <LoaderCircle className="h-5 w-5 text-primary animate-spin mr-2" />
-                <p className="text-sm">Negotiating the best deal for you...</p>
-              </div>
-            )}
-
-            {selectedResults.length > 0 && showNegotiationOptions && (
-              <div className="mt-4">
-                <NegotiationOptions
-                  onSubmit={handleNegotiationSubmit}
-                  onCancel={handleNegotiationCancel}
-                />
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
 
-      {/* Negotiation result summary after all negotiations are complete */}
-      {allNegotiationsComplete && Object.keys(negotiationResults).length > 0 && (
-        <Card className="border-primary/20">
+      {/* Negotiation completed results */}
+      {allNegotiationsComplete && (
+        <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6">
-            <div className="flex flex-col space-y-4">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  Negotiation Complete
+                  Negotiation Results
                 </h3>
-                <Button variant="outline" onClick={resetNegotiation}>
+                <Button variant="outline" size="sm" onClick={resetNegotiation}>
                   Start New Negotiation
                 </Button>
               </div>
-
-              <p className="text-sm text-muted-foreground">
-                We've successfully negotiated with {Object.keys(negotiationResults).length} vendors.
-              </p>
-
+              
               <div className="grid gap-4 mt-2">
                 {selectedResults.map(result => (
                   <div key={`summary-${result.id}`} className="p-3 bg-primary/5 rounded-md">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-medium">{result.vendor.name}</h4>
+                      <h4 className="font-medium">{getVendorDisplayName(result)}</h4>
                       <Badge variant="outline" className="text-sm">
                         {negotiationResults[result.id]?.success ? "Success" : "Failed"}
                       </Badge>
                     </div>
-                    <p className="text-sm mt-2">{negotiationResults[result.id]?.message}</p>
+                    <p className="text-sm mt-2">{negotiationResults[result.id]?.message || "Negotiation completed"}</p>
                   </div>
                 ))}
               </div>
@@ -241,91 +271,156 @@ export default function SearchResults({ results }: SearchResultsProps) {
       {/* Main grid for results with negotiation panel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Results column */}
-        <div className={`lg:col-span-${showNegotiationPanel ? '2' : '3'} space-y-6`}>
-          {sortedResults.map((result, index) => {
-            const isTopResult = index === 0;
-            const isSelected = selectedResults.some(r => r.id === result.id);
-
-            // Modified result that incorporates negotiation results if applicable
-            let displayResult = { ...result };
-            if (isSelected && negotiationResults[result.id]?.success) {
-              if (negotiationResults[result.id]?.negotiatedItems.availability) {
-                displayResult.availability = negotiationResults[result.id].negotiatedItems.availability;
-              }
-              if (negotiationResults[result.id]?.negotiatedItems.discount) {
-                displayResult.discount = negotiationResults[result.id].negotiatedItems.discount;
-              }
-            }
-
-            return (
-              <div key={result.id} className="relative">
-                {isTopResult && !isSelected && (
-                  <Badge className="absolute -top-2 -left-2 z-10 bg-primary" variant="default">
-                    Top Match
-                  </Badge>
-                )}
-
-                <Card className={`overflow-hidden transition-all ${isSelected ? 'border-primary shadow-md' : ''}`}>
-                  <div className="flex flex-col md:flex-row">
-                    <div className="p-6 flex-1">
-                      <div className="space-y-3">
+        <div className={showNegotiationPanel ? "lg:col-span-2" : "lg:col-span-3"}>
+          <div className="space-y-6">
+            {sortedResults.map((result, index) => {
+              const isTopResult = index === 0;
+              const isSelected = selectedResults.some(r => r.id === result.id);
+              
+              // Determine vendor display information
+              const displayResult = {
+                ...result,
+                vendor: result.vendor || {
+                  id: `default-${result.id}`,
+                  name: "Vendor information unavailable",
+                  location: ""
+                }
+              };
+              
+              // Create display variants based on result status
+              const resultVariants = {
+                cardBorder: isSelected ? "border-primary" : isTopResult ? "border-primary/20" : "",
+                badge: isTopResult ? "Top Match" : result.discount ? "Discount" : "",
+                badgeVariant: isTopResult ? "default" : "secondary",
+              };
+              
+              return (
+                <Card 
+                  key={result.id} 
+                  className={`${resultVariants.cardBorder} h-full transition-all hover:shadow-md`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="flex-1">
+                        {resultVariants.badge && (
+                          <Badge className="mb-3" variant={resultVariants.badgeVariant as any}>
+                            {resultVariants.badge}
+                          </Badge>
+                        )}
+                        
                         <div>
                           <h3 className="text-lg font-semibold">{displayResult.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {displayResult.vendor ? 
-                              `${displayResult.vendor.name} • ${displayResult.vendor.location}` : 
-                              "Vendor information unavailable"}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{getVendorDisplayName(result)}</p>
                         </div>
-
-                        <p className="text-sm">{displayResult.description}</p>
-
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xl font-bold">{displayResult.price}</span>
-                          {displayResult.originalPrice && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              {displayResult.originalPrice}
-                            </span>
-                          )}
-                          {displayResult.discount && (
-                            <Badge variant="secondary" className="text-xs">
-                              {displayResult.discount}
+                        
+                        <p className="mt-2 text-sm">{result.description}</p>
+                        
+                        <div className="mt-4 flex items-center gap-4">
+                          <div>
+                            <p className="text-lg font-semibold">{result.price}</p>
+                            {result.originalPrice && (
+                              <p className="text-sm text-muted-foreground line-through">
+                                {result.originalPrice}
+                              </p>
+                            )}
+                          </div>
+                          
+                          {result.discount && (
+                            <Badge variant="outline" className="text-green-600">
+                              {result.discount}
                             </Badge>
                           )}
                         </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {displayResult.availability && (
-                          <Badge variant="outline" className="text-xs">
-                            Available in {displayResult.availability}
-                          </Badge>
+                        
+                        {(result.rating || result.availability) && (
+                          <div className="mt-4 flex flex-wrap gap-3">
+                            {result.rating && (
+                              <Badge variant="outline" className="flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-current" />
+                                {result.rating} 
+                                {result.reviews && (
+                                  <span className="text-muted-foreground">({result.reviews})</span>
+                                )}
+                              </Badge>
+                            )}
+                            
+                            {result.availability && (
+                              <Badge variant="outline">
+                                Available in {result.availability}
+                              </Badge>
+                            )}
+                          </div>
                         )}
-
-                        {displayResult.rating && (
-                          <Badge variant="outline" className="text-sm flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            {displayResult.rating.toFixed(1)}{' '}
-                            {displayResult.reviews && `(${displayResult.reviews})`}
-                          </Badge>
+                      </div>
+                      
+                      <div className="flex flex-col gap-3">
+                        <Button 
+                          onClick={() => toggleSelectResult(result)}
+                          variant={isSelected ? "default" : "outline"}
+                          disabled={negotiating}
+                        >
+                          {isSelected ? "Selected" : "Select for Negotiation"}
+                        </Button>
+                        
+                        <Button variant="outline">
+                          Contact
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+            
+            {sortedResults.length === 0 && !isLoading && (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p className="text-muted-foreground">No results found. Try a different search.</p>
+                </CardContent>
+              </Card>
+            )}
+            
+            {isLoading && (
+              <Card>
+                <CardContent className="p-6 flex justify-center">
+                  <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+        
+        {/* Negotiation panel */}
+        {showNegotiationPanel && (
+          <div className="lg:col-span-1 space-y-6">
+            <Card className="sticky top-6">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Bot className="h-5 w-5 text-primary" />
+                  Negotiation Progress
+                </h3>
+                
+                <div className="space-y-4">
+                  {selectedResults.map(result => (
+                    <div key={`progress-${result.id}`} className="p-3 border rounded-md">
+                      <h4 className="font-medium text-sm">
+                        {getVendorDisplayName(result)}
+                      </h4>
+                      <div className="flex items-center mt-2">
+                        {negotiationProgress[result.id] && negotiationProgress[result.id] !== "Negotiation complete!" ? (
+                          <>
+                            <LoaderCircle className="animate-spin h-4 w-4 mr-2 text-primary" />
+                            <p className="text-sm">{negotiationProgress[result.id]}</p>
+                          </>
+                        ) : (
+                          <p className="text-sm flex items-center">
+                            <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                            Negotiation complete!
+                          </p>
                         )}
                       </div>
-
-                      {isSelected && negotiationResults[result.id]?.success && negotiationResults[result.id]?.negotiatedItems.extraServices && (
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium mb-2">Extra Services:</h4>
-                          <ul className="space-y-1">
-                            {negotiationResults[result.id]?.negotiatedItems.extraServices?.map((service, i) => (
-                              <li key={i} className="text-sm flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-primary" />
-                                {service}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {isSelected && negotiationResults[result.id]?.success && (
+                      
+                      {negotiationResults[result.id] && (
                         <div className="mt-4 p-3 bg-primary/10 rounded-md">
                           <p className="text-sm flex items-center gap-2">
                             <Bot className="h-4 w-4 text-primary" />
@@ -334,86 +429,25 @@ export default function SearchResults({ results }: SearchResultsProps) {
                         </div>
                       )}
                     </div>
-
-                    <div className="bg-muted/30 p-6 flex flex-col justify-between">
-                      <div className="space-y-4">
-                        {isSelected && negotiating ? (
-                          <div className="flex flex-col items-center justify-center h-full">
-                            <LoaderCircle className="h-8 w-8 text-primary animate-spin mb-2" />
-                            <p className="text-sm text-center">Negotiating...</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <Button 
-                              variant={isSelected ? "default" : "outline"} 
-                              className="w-full"
-                              onClick={() => toggleSelectResult(result)}
-                              disabled={negotiating || allNegotiationsComplete}
-                            >
-                              {isSelected ? "Deselect" : "Select for Negotiation"}
-                            </Button>
-
-                            <Button 
-                              variant="outline" 
-                              className="w-full"
-                            >
-                              Contact Directly
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Negotiation progress panel */}
-        {showNegotiationPanel && (
-          <div className="lg:col-span-1">
-            <div className="sticky top-20">
-              <Card>
-                <CardContent className="p-4">
-                  <h3 className="text-lg font-semibold mb-4">Negotiation Progress</h3>
-
-                  <div className="space-y-4">
-                    {selectedResults.map(result => (
-                      <div key={`progress-${result.id}`} className="p-3 border rounded-md">
-                        <h4 className="font-medium text-sm">
-                          {result.vendor ? result.vendor.name : 'Vendor'}
-                        </h4>
-                        <div className="flex items-center mt-2">
-                          {negotiationProgress[result.id] && negotiationProgress[result.id] !== "Negotiation complete!" ? (
-                            <>
-                              <LoaderCircle className="h-4 w-4 text-primary animate-spin mr-2" />
-                              <p className="text-xs">{negotiationProgress[result.id]}</p>
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                              <p className="text-xs">Negotiation complete!</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {allNegotiationsComplete && (
-                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-                      <p className="text-sm font-medium text-center text-green-800">
-                        All negotiations complete!
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
+      
+      {/* Negotiation options dialog */}
+      {showNegotiationOptions && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg max-w-md w-full max-h-[90vh] overflow-auto">
+            <NegotiationOptions 
+              onSubmit={handleNegotiationSubmit} 
+              onCancel={handleNegotiationCancel}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
