@@ -206,9 +206,14 @@ export default function Home() {
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Join thousands of satisfied customers who are finding great deals and services every day.
                 </p>
-                <Button size="lg" asChild>
-                  <Link href="/signup">Sign Up Now</Link>
-                </Button>
+                <div className="flex gap-4 mt-6">
+                  <Button size="lg">
+                    Start Now
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="/signup">Sign Up</Link>
+                  </Button>
+                </div>
               </div>
             </section>
           </div>

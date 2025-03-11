@@ -6,6 +6,7 @@ import Home from "@/pages/home";
 import VendorRegistration from "@/pages/vendor-registration";
 import VendorDashboard from "@/pages/vendor-dashboard";
 import Deals from "@/pages/deals";
+import Signup from "@/pages/signup";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/register" component={VendorRegistration} />
       <Route path="/dashboard" component={VendorDashboard} />
       <Route path="/deals" component={Deals} />
+      <Route path="/signup" component={Signup} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,7 +43,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
   const sortedResults = [...uniqueResults].sort((a, b) => {
     const aSelected = selectedResults.some(r => r.id === a.id);
     const bSelected = selectedResults.some(r => r.id === b.id);
-    
+
     if (aSelected && !bSelected) return -1;
     if (!aSelected && bSelected) return 1;
     return 0;
@@ -110,13 +109,13 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
           "After some back and forth, we've secured favorable terms.",
           "Good news! The vendor has agreed to our conditions."
         ];
-        
+
         // Random human-like response
         const randomResponse = humanResponses[Math.floor(Math.random() * humanResponses.length)];
-        
+
         // Generate vendor name or use placeholder
         const vendorName = result.vendor?.name || `${result.title.split(' ')[0]} provider`;
-        
+
         // Mock negotiation result
         const mockResult: NegotiationResult = {
           success: true,
@@ -249,7 +248,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                   Start New Negotiation
                 </Button>
               </div>
-              
+
               <div className="grid gap-4 mt-2">
                 {selectedResults.map(result => (
                   <div key={`summary-${result.id}`} className="p-3 bg-primary/5 rounded-md">
@@ -276,7 +275,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
             {sortedResults.map((result, index) => {
               const isTopResult = index === 0;
               const isSelected = selectedResults.some(r => r.id === result.id);
-              
+
               // Determine vendor display information
               const displayResult = {
                 ...result,
@@ -286,14 +285,14 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                   location: ""
                 }
               };
-              
+
               // Create display variants based on result status
               const resultVariants = {
                 cardBorder: isSelected ? "border-primary" : isTopResult ? "border-primary/20" : "",
                 badge: isTopResult ? "Top Match" : result.discount ? "Discount" : "",
                 badgeVariant: isTopResult ? "default" : "secondary",
               };
-              
+
               return (
                 <Card 
                   key={result.id} 
@@ -307,14 +306,14 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                             {resultVariants.badge}
                           </Badge>
                         )}
-                        
+
                         <div>
                           <h3 className="text-lg font-semibold">{displayResult.title}</h3>
                           <p className="text-sm text-muted-foreground">{getVendorDisplayName(result)}</p>
                         </div>
-                        
+
                         <p className="mt-2 text-sm">{result.description}</p>
-                        
+
                         <div className="mt-4 flex items-center gap-4">
                           <div>
                             <p className="text-lg font-semibold">{result.price}</p>
@@ -324,14 +323,14 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                               </p>
                             )}
                           </div>
-                          
+
                           {result.discount && (
                             <Badge variant="outline" className="text-green-600">
                               {result.discount}
                             </Badge>
                           )}
                         </div>
-                        
+
                         {(result.rating || result.availability) && (
                           <div className="mt-4 flex flex-wrap gap-3">
                             {result.rating && (
@@ -343,7 +342,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                                 )}
                               </Badge>
                             )}
-                            
+
                             {result.availability && (
                               <Badge variant="outline">
                                 Available in {result.availability}
@@ -352,7 +351,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="flex flex-col gap-3">
                         <Button 
                           onClick={() => toggleSelectResult(result)}
@@ -361,7 +360,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                         >
                           {isSelected ? "Selected" : "Select for Negotiation"}
                         </Button>
-                        
+
                         <Button variant="outline">
                           Contact
                         </Button>
@@ -371,7 +370,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                 </Card>
               )
             })}
-            
+
             {sortedResults.length === 0 && !isLoading && (
               <Card>
                 <CardContent className="p-6 text-center">
@@ -379,7 +378,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                 </CardContent>
               </Card>
             )}
-            
+
             {isLoading && (
               <Card>
                 <CardContent className="p-6 flex justify-center">
@@ -389,7 +388,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
             )}
           </div>
         </div>
-        
+
         {/* Negotiation panel */}
         {showNegotiationPanel && (
           <div className="lg:col-span-1 space-y-6">
@@ -399,7 +398,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                   <Bot className="h-5 w-5 text-primary" />
                   Negotiation Progress
                 </h3>
-                
+
                 <div className="space-y-4">
                   {selectedResults.map(result => (
                     <div key={`progress-${result.id}`} className="p-3 border rounded-md">
@@ -419,7 +418,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
                           </p>
                         )}
                       </div>
-                      
+
                       {negotiationResults[result.id] && (
                         <div className="mt-4 p-3 bg-primary/10 rounded-md">
                           <p className="text-sm flex items-center gap-2">
@@ -436,7 +435,7 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
           </div>
         )}
       </div>
-      
+
       {/* Negotiation options dialog */}
       {showNegotiationOptions && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
