@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,7 +41,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
   const sortedResults = [...uniqueResults].sort((a, b) => {
     const aSelected = selectedResults.some(r => r.id === a.id);
     const bSelected = selectedResults.some(r => r.id === b.id);
-    
+
     if (aSelected && !bSelected) return -1;
     if (!aSelected && bSelected) return 1;
     return 0;
@@ -50,11 +49,11 @@ export default function SearchResults({ results }: SearchResultsProps) {
 
   const handleNegotiationSubmit = async (options: NegotiationOptionsType) => {
     if (selectedResults.length === 0) return;
-    
+
     setNegotiating(true);
     setShowNegotiationOptions(false);
     setShowNegotiationPanel(true);
-    
+
     try {
       // Initialize progress for all selected vendors
       const initialProgress: {[key: string]: string} = {};
@@ -70,26 +69,26 @@ export default function SearchResults({ results }: SearchResultsProps) {
           ...prev,
           [result.id]: "Sending initial offer..."
         }));
-        
+
         // Simulate negotiation delay (different for each vendor)
         await new Promise(resolve => setTimeout(resolve, 2000 + (index * 1500)));
-        
+
         // First update
         setNegotiationProgress(prev => ({
           ...prev,
           [result.id]: "Vendor reviewing your offer..."
         }));
-        
+
         await new Promise(resolve => setTimeout(resolve, 3000 + (index * 1000)));
-        
+
         // Second update
         setNegotiationProgress(prev => ({
           ...prev,
           [result.id]: "Vendor counter-offering..."
         }));
-        
+
         await new Promise(resolve => setTimeout(resolve, 2500));
-        
+
         // Mock negotiation result
         const mockResult: NegotiationResult = {
           success: true,
@@ -103,19 +102,19 @@ export default function SearchResults({ results }: SearchResultsProps) {
           },
           message: `Successfully negotiated with ${result.vendor ? result.vendor.name : 'the vendor'}!`,
         };
-        
+
         // Final progress update
         setNegotiationProgress(prev => ({
           ...prev,
           [result.id]: "Negotiation complete!"
         }));
-        
+
         return { id: result.id, result: mockResult };
       });
-      
+
       // Wait for all negotiations to complete
       const results = await Promise.all(negotiationPromises);
-      
+
       // Update the negotiation results state
       const newResults: {[key: string]: NegotiationResult} = {};
       results.forEach(({ id, result }) => {
@@ -123,21 +122,21 @@ export default function SearchResults({ results }: SearchResultsProps) {
       });
       setNegotiationResults(newResults);
       setAllNegotiationsComplete(true);
-      
+
     } catch (error) {
       console.error("Negotiation failed:", error);
     } finally {
       setNegotiating(false);
     }
   };
-  
+
   const handleNegotiationCancel = () => {
     setShowNegotiationOptions(false);
   };
 
   const toggleSelectResult = (result: SearchResult) => {
     if (negotiating) return; // Prevent selection during negotiation
-    
+
     setSelectedResults(prev => {
       const isSelected = prev.some(r => r.id === result.id);
       if (isSelected) {
@@ -147,14 +146,14 @@ export default function SearchResults({ results }: SearchResultsProps) {
       }
     });
   };
-  
+
   const resetNegotiation = () => {
     setNegotiationResults({});
     setNegotiationProgress({});
     setShowNegotiationPanel(false);
     setAllNegotiationsComplete(false);
   };
-  
+
   return (
     <div className="space-y-6">
       {/* Global negotiation section above all results */}
@@ -171,7 +170,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                   Select services below and use AI to negotiate for better deals
                 </p>
               </div>
-              
+
               {selectedResults.length > 0 && !showNegotiationOptions && !negotiating && (
                 <Button 
                   onClick={() => setShowNegotiationOptions(true)}
@@ -182,14 +181,14 @@ export default function SearchResults({ results }: SearchResultsProps) {
                 </Button>
               )}
             </div>
-            
+
             {negotiating && !showNegotiationPanel && (
               <div className="mt-4 flex items-center justify-center p-4 bg-secondary/20 rounded-lg">
                 <LoaderCircle className="h-5 w-5 text-primary animate-spin mr-2" />
                 <p className="text-sm">Negotiating the best deal for you...</p>
               </div>
             )}
-            
+
             {selectedResults.length > 0 && showNegotiationOptions && (
               <div className="mt-4">
                 <NegotiationOptions
@@ -216,11 +215,11 @@ export default function SearchResults({ results }: SearchResultsProps) {
                   Start New Negotiation
                 </Button>
               </div>
-              
+
               <p className="text-sm text-muted-foreground">
                 We've successfully negotiated with {Object.keys(negotiationResults).length} vendors.
               </p>
-              
+
               <div className="grid gap-4 mt-2">
                 {selectedResults.map(result => (
                   <div key={`summary-${result.id}`} className="p-3 bg-primary/5 rounded-md">
@@ -238,7 +237,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
           </CardContent>
         </Card>
       )}
-      
+
       {/* Main grid for results with negotiation panel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Results column */}
@@ -246,7 +245,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
           {sortedResults.map((result, index) => {
             const isTopResult = index === 0;
             const isSelected = selectedResults.some(r => r.id === result.id);
-            
+
             // Modified result that incorporates negotiation results if applicable
             let displayResult = { ...result };
             if (isSelected && negotiationResults[result.id]?.success) {
@@ -257,7 +256,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                 displayResult.discount = negotiationResults[result.id].negotiatedItems.discount;
               }
             }
-          
+
             return (
               <div key={result.id} className="relative">
                 {isTopResult && !isSelected && (
@@ -265,7 +264,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                     Top Match
                   </Badge>
                 )}
-                
+
                 <Card className={`overflow-hidden transition-all ${isSelected ? 'border-primary shadow-md' : ''}`}>
                   <div className="flex flex-col md:flex-row">
                     <div className="p-6 flex-1">
@@ -278,9 +277,9 @@ export default function SearchResults({ results }: SearchResultsProps) {
                               "Vendor information unavailable"}
                           </p>
                         </div>
-                        
+
                         <p className="text-sm">{displayResult.description}</p>
-                        
+
                         <div className="flex items-center space-x-2">
                           <span className="text-xl font-bold">{displayResult.price}</span>
                           {displayResult.originalPrice && (
@@ -295,14 +294,14 @@ export default function SearchResults({ results }: SearchResultsProps) {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-2 mt-4">
                         {displayResult.availability && (
                           <Badge variant="outline" className="text-xs">
                             Available in {displayResult.availability}
                           </Badge>
                         )}
-                        
+
                         {displayResult.rating && (
                           <Badge variant="outline" className="text-sm flex items-center gap-1">
                             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -311,7 +310,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                           </Badge>
                         )}
                       </div>
-                      
+
                       {isSelected && negotiationResults[result.id]?.success && negotiationResults[result.id]?.negotiatedItems.extraServices && (
                         <div className="mt-4">
                           <h4 className="text-sm font-medium mb-2">Extra Services:</h4>
@@ -325,7 +324,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                           </ul>
                         </div>
                       )}
-                      
+
                       {isSelected && negotiationResults[result.id]?.success && (
                         <div className="mt-4 p-3 bg-primary/10 rounded-md">
                           <p className="text-sm flex items-center gap-2">
@@ -335,7 +334,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="bg-muted/30 p-6 flex flex-col justify-between">
                       <div className="space-y-4">
                         {isSelected && negotiating ? (
@@ -353,7 +352,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                             >
                               {isSelected ? "Deselect" : "Select for Negotiation"}
                             </Button>
-                            
+
                             <Button 
                               variant="outline" 
                               className="w-full"
@@ -370,7 +369,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
             );
           })}
         </div>
-        
+
         {/* Negotiation progress panel */}
         {showNegotiationPanel && (
           <div className="lg:col-span-1">
@@ -378,7 +377,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
               <Card>
                 <CardContent className="p-4">
                   <h3 className="text-lg font-semibold mb-4">Negotiation Progress</h3>
-                  
+
                   <div className="space-y-4">
                     {selectedResults.map(result => (
                       <div key={`progress-${result.id}`} className="p-3 border rounded-md">
@@ -401,7 +400,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                       </div>
                     ))}
                   </div>
-                  
+
                   {allNegotiationsComplete && (
                     <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
                       <p className="text-sm font-medium text-center text-green-800">
