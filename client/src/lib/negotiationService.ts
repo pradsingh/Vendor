@@ -7,6 +7,13 @@ export interface NegotiationResult {
   discount?: string;
   extras?: string;
   availability?: string;
+  negotiatedItems?: {
+    availability?: string;
+    discount?: string;
+    extraServices?: string[];
+  };
+  vendorId?: string;
+  timestamp?: number;
 }
 
 // Mock negotiation service - in a real app, this would make API calls

@@ -128,6 +128,9 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
             ] : undefined,
           },
           message: `${randomResponse} ${options.negotiateDiscount ? "We've secured a special discount." : ""} ${options.negotiateExtraService ? "Additional services included at no extra cost." : ""}`,
+          finalPrice: options.negotiateDiscount ? `₹${Math.floor(parseInt(result.price.replace('₹', '')) * 0.85)}` : result.price,
+          vendorId: result.vendor?.id || result.id,
+          timestamp: Date.now(),
         };
 
         // Final progress update
@@ -242,25 +245,71 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  Negotiation Results
+                  Best Negotiation Result
                 </h3>
                 <Button variant="outline" size="sm" onClick={resetNegotiation}>
                   Start New Negotiation
                 </Button>
               </div>
 
-              <div className="grid gap-4 mt-2">
-                {selectedResults.map(result => (
-                  <div key={`summary-${result.id}`} className="p-3 bg-primary/5 rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium">{getVendorDisplayName(result)}</h4>
-                      <Badge variant="outline" className="text-sm">
-                        {negotiationResults[result.id]?.success ? "Success" : "Failed"}
-                      </Badge>
+              <div className="mt-2">
+                {/* Show only the best offer/vendor */}
+                {(() => {
+                  // Find the most successful negotiation result
+                  const bestResultId = Object.keys(negotiationResults).find(id => 
+                    negotiationResults[id]?.success
+                  );
+                  
+                  if (bestResultId) {
+                    const result = selectedResults.find(r => r.id === bestResultId);
+                    if (!result) return null;
+                    
+                    const vendorName = getVendorDisplayName(result);
+                    const originalPrice = result.price || "";
+                    const discount = Math.floor(Math.random() * 15) + 5;
+                    const finalPrice = originalPrice ? `₹${parseInt(originalPrice.replace('₹', '')) - 
+                      (parseInt(originalPrice.replace('₹', '')) * discount / 100)}` : "";
+                    
+                    return (
+                      <div className="p-4 bg-primary/5 rounded-md border border-primary/20">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium text-lg">{vendorName}</h4>
+                          <Badge className="bg-green-500 text-white">Best Offer</Badge>
+                        </div>
+                        <p className="mt-3">
+                          After some back and forth, we've secured favorable terms. We've secured a special discount 
+                          from {vendorName} and they are giving the {result.title.split(' ')[0]} in {finalPrice} 
+                          {negotiationResults[bestResultId].negotiatedItems?.extraServices?.length ? 
+                           ` with ${negotiationResults[bestResultId].negotiatedItems.extraServices.join(" and ")}` : ""}
+                        </p>
+                        
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {originalPrice && (
+                            <Badge variant="outline" className="text-sm">
+                              Original: {originalPrice}
+                            </Badge>
+                          )}
+                          {finalPrice && (
+                            <Badge variant="outline" className="text-sm bg-green-50">
+                              Final Offer: {finalPrice}
+                            </Badge>
+                          )}
+                          {discount && (
+                            <Badge variant="outline" className="text-sm">
+                              Discount: {discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <div className="p-3 bg-primary/5 rounded-md">
+                      <p>No successful negotiations to display.</p>
                     </div>
-                    <p className="text-sm mt-2">{negotiationResults[result.id]?.message || "Negotiation completed"}</p>
-                  </div>
-                ))}
+                  );
+                })()}
               </div>
             </div>
           </CardContent>
