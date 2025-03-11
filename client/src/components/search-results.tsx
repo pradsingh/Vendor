@@ -37,8 +37,9 @@ export default function SearchResults({ results }: SearchResultsProps) {
   const [showNegotiationPanel, setShowNegotiationPanel] = useState(false);
   const [allNegotiationsComplete, setAllNegotiationsComplete] = useState(false);
 
-  // Sort results with selected ones at the top
-  const sortedResults = [...results].sort((a, b) => {
+  // Deduplicate results and sort with selected ones at the top
+  const uniqueResults = [...new Map(results.map(item => [item.id, item])).values()];
+  const sortedResults = [...uniqueResults].sort((a, b) => {
     const aSelected = selectedResults.some(r => r.id === a.id);
     const bSelected = selectedResults.some(r => r.id === b.id);
     
@@ -100,7 +101,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
               "Extended warranty"
             ] : undefined,
           },
-          message: `Successfully negotiated with ${result.vendor.name}!`,
+          message: `Successfully negotiated with ${result.vendor ? result.vendor.name : 'the vendor'}!`,
         };
         
         // Final progress update
@@ -329,7 +330,7 @@ export default function SearchResults({ results }: SearchResultsProps) {
                         <div className="mt-4 p-3 bg-primary/10 rounded-md">
                           <p className="text-sm flex items-center gap-2">
                             <Bot className="h-4 w-4 text-primary" />
-                            {negotiationResults[result.id]?.message}
+                            {negotiationResults[result.id]?.message || 'Negotiation completed'}
                           </p>
                         </div>
                       )}
@@ -381,7 +382,9 @@ export default function SearchResults({ results }: SearchResultsProps) {
                   <div className="space-y-4">
                     {selectedResults.map(result => (
                       <div key={`progress-${result.id}`} className="p-3 border rounded-md">
-                        <h4 className="font-medium text-sm">{result.vendor.name}</h4>
+                        <h4 className="font-medium text-sm">
+                          {result.vendor ? result.vendor.name : 'Vendor'}
+                        </h4>
                         <div className="flex items-center mt-2">
                           {negotiationProgress[result.id] && negotiationProgress[result.id] !== "Negotiation complete!" ? (
                             <>
