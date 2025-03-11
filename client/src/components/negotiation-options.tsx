@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Bot } from "lucide-react";
@@ -18,7 +18,7 @@ export interface NegotiationOptions {
 export default function NegotiationOptions({ onSubmit, onCancel }: NegotiationOptionsProps) {
   const [options, setOptions] = useState<NegotiationOptions>({
     negotiateAvailability: false,
-    negotiateDiscount: false,
+    negotiateDiscount: true, // Default to price negotiation
     negotiateExtraService: false,
   });
 
@@ -37,8 +37,12 @@ export default function NegotiationOptions({ onSubmit, onCancel }: NegotiationOp
     <div className="p-4 bg-card border rounded-lg shadow-sm">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
         <Bot className="h-5 w-5 text-primary" />
-        Negotiation Options
+        Multi-Vendor Negotiation Options
       </h3>
+      
+      <p className="text-sm text-muted-foreground mb-4">
+        Our AI will negotiate with all selected vendors simultaneously to get you the best deals.
+      </p>
       
       <div className="space-y-3 mb-6">
         <div className="flex items-start space-x-2">
@@ -74,7 +78,7 @@ export default function NegotiationOptions({ onSubmit, onCancel }: NegotiationOp
               Better Discount
             </label>
             <p className="text-sm text-muted-foreground">
-              Try to get a better price on this service
+              Try to get a better price on these services
             </p>
           </div>
         </div>
@@ -107,7 +111,7 @@ export default function NegotiationOptions({ onSubmit, onCancel }: NegotiationOp
           onClick={handleSubmit}
           disabled={!options.negotiateAvailability && !options.negotiateDiscount && !options.negotiateExtraService}
         >
-          Start Negotiation
+          Start Multi-Vendor Negotiation
         </Button>
       </div>
     </div>
