@@ -271,7 +271,11 @@ export default function SearchResults({ results }: SearchResultsProps) {
                       <div className="space-y-3">
                         <div>
                           <h3 className="text-lg font-semibold">{displayResult.title}</h3>
-                          <p className="text-sm text-muted-foreground">{displayResult.vendor.name} • {displayResult.vendor.location}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {displayResult.vendor ? 
+                              `${displayResult.vendor.name} • ${displayResult.vendor.location}` : 
+                              "Vendor information unavailable"}
+                          </p>
                         </div>
                         
                         <p className="text-sm">{displayResult.description}</p>
