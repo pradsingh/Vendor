@@ -2,14 +2,11 @@ import { NegotiationOptions } from "@/components/negotiation-options";
 
 export interface NegotiationResult {
   success: boolean;
-  negotiatedItems: {
-    availability?: string;
-    discount?: string;
-    extraServices?: string[];
-  };
   message: string;
-  vendorId?: string;
-  timestamp?: number;
+  finalPrice?: string;
+  discount?: string;
+  extras?: string;
+  availability?: string;
 }
 
 // Mock negotiation service - in a real app, this would make API calls

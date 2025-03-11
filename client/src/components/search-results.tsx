@@ -309,47 +309,48 @@ export default function SearchResults({ results, isLoading }: SearchResultsProps
 
                         <div>
                           <h3 className="text-lg font-semibold">{displayResult.title}</h3>
-                          <p className="text-sm text-muted-foreground">{getVendorDisplayName(result)}</p>
+                          <p className="text-sm">{displayResult.description}</p>
                         </div>
 
-                        <p className="mt-2 text-sm">{result.description}</p>
-
-                        <div className="mt-4 flex items-center gap-4">
-                          <div>
-                            <p className="text-lg font-semibold">{result.price}</p>
-                            {result.originalPrice && (
-                              <p className="text-sm text-muted-foreground line-through">
-                                {result.originalPrice}
-                              </p>
+                        <div className="flex flex-wrap gap-3 mt-4">
+                          <div className="flex items-center">
+                            <span className="font-medium mr-1">₹{displayResult.price ? displayResult.price.replace('₹', '') : '0'}</span>
+                            {displayResult.originalPrice && (
+                              <span className="text-muted-foreground line-through ml-2">
+                                {displayResult.originalPrice}
+                              </span>
                             )}
                           </div>
 
-                          {result.discount && (
-                            <Badge variant="outline" className="text-green-600">
-                              {result.discount}
-                            </Badge>
+                          {displayResult.availability && (
+                            <div className="flex items-center">
+                              <span className="inline-flex items-center">
+                                <span className="mr-1">Available in</span> {displayResult.availability}
+                              </span>
+                            </div>
+                          )}
+
+                          {displayResult.rating && (
+                            <div className="flex items-center">
+                              <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                              <span>{displayResult.rating} ({displayResult.reviews || 0})</span>
+                            </div>
                           )}
                         </div>
 
-                        {(result.rating || result.availability) && (
-                          <div className="mt-4 flex flex-wrap gap-3">
-                            {result.rating && (
-                              <Badge variant="outline" className="flex items-center gap-1">
-                                <Star className="h-3 w-3 fill-current" />
-                                {result.rating} 
-                                {result.reviews && (
-                                  <span className="text-muted-foreground">({result.reviews})</span>
-                                )}
-                              </Badge>
-                            )}
-
-                            {result.availability && (
-                              <Badge variant="outline">
-                                Available in {result.availability}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                        <div className="flex flex-wrap gap-3 text-sm mt-2">
+                          {displayResult.vendor && (
+                            <>
+                              <a href="#" className="text-blue-500 hover:underline flex items-center">
+                                <span className="mr-1">Google Business</span>
+                                {displayResult.reviews && <span>({displayResult.reviews} reviews)</span>}
+                              </a>
+                              <a href="#" className="text-blue-500 hover:underline">
+                                JustDial
+                              </a>
+                            </>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex flex-col gap-3">
