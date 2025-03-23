@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { insertVendorSchema, type InsertVendor } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,7 +11,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,40 +20,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
+import { Link } from "wouter";
+import { HomeButton } from "@/components/home-button"; // Added HomeButton import
+
+
+const indianLanguages = [
+  "English", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Urdu", "Gujarati",
+  "Kannada", "Malayalam", "Odia", "Punjabi", "Assamese", "Maithili"
+];
+
+const businessTypes = [
+  "Plumber","Tyre Shop", "Electrician", "Transport", "Carpenter", "Painter",
+  "Home Cleaning", "Pest Control", "AC Repair", "Car Repair",
+  "Real Estate", "Interior Designer", "Construction", "Other"
+];
+
+const vendorSchema = z.object({
+  businessName: z.string().min(1, "Business name is required"),
+  businessType: z.string().min(1, "Business type is required"),
+  otherBusinessType: z.string().optional(),
+  contactNo: z.string().regex(/^\91[0-9]{10}$/, "Invalid Indian phone number"),
+  googleListingUrl: z.string().url("Invalid URL").optional().or(z.literal('')),
+  justDialUrl: z.string().url("Invalid URL").optional().or(z.literal('')),
+  otherListingUrls: z.string().optional().or(z.literal('')),
+  primaryLanguage: z.string().min(1, "Primary language is required"),
+  otherLanguages: z.array(z.string()).optional()
+});
+
+type VendorForm = z.infer<typeof vendorSchema>;
 
 export default function VendorRegistration() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const form = useForm<InsertVendor>({
-    resolver: zodResolver(insertVendorSchema),
+  const form = useForm<VendorForm>({
+    resolver: zodResolver(vendorSchema),
     defaultValues: {
-      name: "",
-      whatsappNumber: "",
-      whatsappNegotiationNumber: "",
-      whatsappBookingNumber: "",
+      businessName: "",
       businessType: "",
+      otherBusinessType: "",
+      contactNo: "+91",
       googleListingUrl: "",
       justDialUrl: "",
-      bargainLevel: "NO_BARGAIN",
-      maxDiscountThreshold: 0,
-      thresholdAmount: 0,
-      negotiationDescription: "",
-    },
+      otherListingUrls: "",
+      primaryLanguage: "",
+      otherLanguages: []
+    }
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: InsertVendor) => {
-      const res = await apiRequest("POST", "/api/vendors", data);
+    mutationFn: async (data: VendorForm) => {
+      const res = await fetch("http://localhost:5001/VendorOnBoard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error("Registration failed");
       return res.json();
     },
     onSuccess: () => {
       toast({
         title: "Registration successful",
-        description: "You can now start posting deals",
+        description: "Your business has been registered successfully",
       });
       setLocation("/dashboard");
     },
@@ -69,252 +98,204 @@ export default function VendorRegistration() {
   });
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background p-8">
+      <HomeButton />
       <div className="container mx-auto px-4">
         <div className="flex justify-center mb-8">
           <img
-            src="attached_assets/473401005_1684307442443812_4879780615142385148_n.jpg"
+            src="/assets/Xinacle_Logo.jpg"
             alt="Xinacle Logo"
-            className="h-12"
+            className="h-16 object-contain"
           />
         </div>
-        <h1 className="text-3xl font-bold text-center mb-8">Vendor Registration</h1>
 
-        <Card className="max-w-2xl mx-auto">
-          <CardContent className="pt-6">
+        <Card className="max-w-2xl mx-auto border-0 shadow-lg bg-white/80 backdrop-blur">
+          <CardContent className="p-8">
+            <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Vendor Registration
+            </h1>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit((data) => registerMutation.mutate(data))} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your business name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="businessType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Business Type</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="e.g. Retail, Services, Food"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="whatsappNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primary WhatsApp Number</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="+1234567890"
-                            type="tel"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="whatsappNegotiationNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Negotiation WhatsApp Number</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="+1234567890 (Optional)"
-                            type="tel"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <FormField
                   control={form.control}
-                  name="whatsappBookingNumber"
+                  name="businessName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Booking WhatsApp Number</FormLabel>
+                      <FormLabel>Business Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="+1234567890 (Optional)"
-                          type="tel"
-                          {...field} 
-                        />
+                        <Input placeholder="Enter your business name" {...field} className="border-2" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="businessType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your business type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {businessTypes.map(type => (
+                            <SelectItem key={type} value={type}>{type}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {form.watch('businessType') === 'Other' && (
                   <FormField
                     control={form.control}
-                    name="googleListingUrl"
+                    name="otherBusinessType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Google Business Listing URL</FormLabel>
+                        <FormLabel>Other Business Type</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="https://google.com/business/..."
-                            type="url"
-                            {...field} 
-                          />
+                          <Input placeholder="Specify your business type" {...field} className="border-2" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                )}
 
-                  <FormField
-                    control={form.control}
-                    name="justDialUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>JustDial Listing URL</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="contactNo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+91" {...field} className="border-2" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="googleListingUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Google Listing URL</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter your Google Business listing URL" {...field} className="border-2" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="justDialUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Just Dial Listing URL</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter your Just Dial listing URL" {...field} className="border-2" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="otherListingUrls"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Other Listing URLs</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Enter other business listing URLs (one per line)" {...field} className="border-2" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="primaryLanguage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primary Language</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <Input 
-                            placeholder="https://justdial.com/..."
-                            type="url"
-                            {...field} 
-                          />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select primary language" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                        <SelectContent>
+                          {indianLanguages.map(lang => (
+                            <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="space-y-4 p-4 bg-secondary/10 rounded-lg">
-                  <h3 className="font-semibold">Negotiation Settings</h3>
-
-                  <FormField
-                    control={form.control}
-                    name="negotiationDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Negotiation Approach</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="otherLanguages"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Other Languages</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          const current = field.value || [];
+                          field.onChange([...current, value]);
+                        }}
+                      >
                         <FormControl>
-                          <Textarea
-                            placeholder="Describe your typical negotiation process and bargaining techniques..."
-                            className="min-h-[100px]"
-                            {...field}
-                          />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select additional languages" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormDescription>
-                          Explain how you typically negotiate with customers and what factors influence your bargaining decisions
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                        <SelectContent>
+                          {indianLanguages.map(lang => (
+                            <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {field.value?.map(lang => (
+                          <span key={lang} className="px-2 py-1 bg-blue-100 rounded-full text-sm">
+                            {lang}
+                            <button
+                              type="button"
+                              onClick={() => field.onChange(field.value?.filter(l => l !== lang))}
+                              className="ml-2 text-red-500"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="bargainLevel"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bargaining Level</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select bargaining level" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="NO_BARGAIN">No Bargain</SelectItem>
-                            <SelectItem value="LOW_BARGAIN">Low Bargain</SelectItem>
-                            <SelectItem value="MEDIUM_BARGAIN">Medium Bargain</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="maxDiscountThreshold"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Maximum Discount (%)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              min="0"
-                              max="100"
-                              {...field}
-                              onChange={e => field.onChange(Number(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Maximum discount percentage you're willing to offer
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="thresholdAmount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Threshold Amount ($)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              min="0"
-                              {...field}
-                              onChange={e => field.onChange(Number(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Order amount above which special discounts apply
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full"
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   disabled={registerMutation.isPending}
                 >
-                  {registerMutation.isPending ? "Registering..." : "Register"}
+                  {registerMutation.isPending ? "Registering..." : "Register Your Business"}
                 </Button>
               </form>
             </Form>

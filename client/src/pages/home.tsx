@@ -24,28 +24,28 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <aside className="w-64 bg-card border-r">
+        <aside className="w-64 bg-card border-r shadow-lg">
           <div className="p-4">
             <img
-              src="/assets/logo.jpg"
+              src="/assets/Xinacle_Logo.jpg"
               alt="Xinacle Logo"
-              className="h-8 mb-8"
+              className="h-12 mb-8 mx-auto"
             />
             <nav className="space-y-2">
               <Link href="/register">
-                <Button variant="ghost" className="w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                   <Store className="mr-2 h-4 w-4" />
                   Vendor Registration
                 </Button>
               </Link>
               <Link href="/deals">
-                <Button variant="ghost" className="w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                   <TrendingUp className="mr-2 h-4 w-4" />
                   Browse Deals
                 </Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="ghost" className="w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                   <Store className="mr-2 h-4 w-4" />
                   Vendor Dashboard
                 </Button>
@@ -58,7 +58,7 @@ export default function Home() {
         <main className="flex-1 overflow-auto bg-gradient-to-b from-background to-secondary/10">
           <div className="max-w-4xl mx-auto px-4 py-12">
             <div className="text-center mb-16">
-              <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+              <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Xinacle AI search
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -115,12 +115,7 @@ export default function Home() {
               )}
             </div>
 
-            {/* Display search results */}
-            {submittedQuery && (
-              <div className="mt-8">
-                <SearchResults results={searchResults || []} isLoading={isLoading} />
-              </div>
-            )}
+         
 
             {/* Hide marketing content when search results are displayed */}
             {!submittedQuery && (
@@ -206,11 +201,11 @@ export default function Home() {
                 <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Join thousands of satisfied customers who are finding great deals and services every day.
                 </p>
-                <div className="flex gap-4 mt-6">
-                  <Button size="lg">
+                <div className="flex gap-4 mt-6"> 
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                     Start Now
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
+                  <Button size="lg" variant="outline" asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                     <Link href="/signup">Sign Up</Link>
                   </Button>
                 </div>
